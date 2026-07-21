@@ -94,8 +94,21 @@ function escapeHtml(value) {
 
 function assetUrl(src) {
   if (!src) return "";
+  const embedded = embeddedAssetUrl(src);
+  if (embedded) return embedded;
   if (/^(data:|blob:|https?:|file:)/i.test(src)) return src;
   return new URL(src, location.href).href;
+}
+
+function embeddedAssetUrl(src) {
+  const data = window.STAATI_SCREENSHOT_DATA || {};
+  if (data[src]) return data[src];
+  try {
+    const path = new URL(src, location.href).pathname.replace(/^\/+/, "");
+    return data[path] || "";
+  } catch {
+    return "";
+  }
 }
 
 function splitLines(text) {
@@ -873,7 +886,7 @@ async function waitForNodeImages(node) {
     if (img.complete && img.naturalWidth > 0) return resolve();
     img.onload = resolve;
     img.onerror = resolve;
-  })));
+  }).then(() => img.decode ? img.decode().catch(() => {}) : undefined)));
 }
 
 async function imageSrcToDataUrl(src) {
