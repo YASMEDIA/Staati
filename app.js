@@ -178,13 +178,12 @@ function renderCover(slide) {
 
 function renderTimelineSlide(slide) {
   return `
-    <div class="slide-content flex flex-col justify-between">
-      <div>
-        ${sectionLabel(slide)}
-        <h2 class="slide-title mt-[34px]">${splitLines(t(slide.title))}</h2>
-        <p class="slide-subtitle">${splitLines(t(slide.subtitle))}</p>
+    <div class="slide-content flex flex-col justify-center">
+      <div class="mx-auto w-full max-w-[1220px] text-center">
+        <h2 class="slide-title mx-auto max-w-[1180px]">${splitLines(t(slide.title))}</h2>
+        <p class="slide-subtitle mx-auto max-w-[920px]">${splitLines(t(slide.subtitle))}</p>
       </div>
-      <div class="timeline" style="--items:${list(slide.bullets).length}">
+      <div class="timeline mt-[96px]" style="--items:${list(slide.bullets).length}">
         ${list(slide.bullets).map((item, index) => `
           <div class="timeline-item ${index === 4 ? "text-white" : "text-white/58"}">
             <span class="timeline-dot ${index === 4 ? "scale-125 shadow-[0_0_36px_rgba(82,108,244,.88)]" : ""}"></span>
