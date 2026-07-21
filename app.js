@@ -483,7 +483,7 @@ function renderClosing(slide) {
       <div>
         <h2 class="slide-title max-w-[1150px]">${splitLines(t(slide.title))}</h2>
         <p class="slide-subtitle">${splitLines(t(slide.body))}</p>
-        <div class="mt-[42px] inline-flex border border-staati-blue/60 bg-staati-blue px-[26px] py-[17px] text-[clamp(14px,1.05vw,21px)] font-bold">${escapeHtml(t(slide.cta))}</div>
+        <div class="mt-[42px] inline-flex min-w-[420px] items-center justify-center rounded-full border border-staati-blue/60 bg-staati-blue px-[44px] py-[24px] text-center text-[clamp(15px,1.15vw,24px)] font-bold shadow-[0_18px_42px_rgba(82,108,244,.28)]">${escapeHtml(t(slide.cta))}</div>
       </div>
       <div class="grid grid-cols-3 gap-[20px] text-[clamp(11px,.8vw,16px)] text-white/62">
         <span>${escapeHtml(state.settings.website)}</span>
