@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0C0D10" />
+    <title>STAATI B2B Presentation</title>
+    <link rel="preload" as="image" href="./assets/screenshots/home-rest.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/splash.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/daily-log.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/program.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/home-progress.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/messages.jpg" />
+    <link rel="preload" as="image" href="./assets/screenshots/profile.jpg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              staati: {
+                dark: "#0C0D10",
+                light: "#F2F4FB",
+                blue: "#526CF4",
+                muted: "#9298AC",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="export-root" aria-hidden="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="./presentationData.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
