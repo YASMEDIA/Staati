@@ -1,4 +1,5 @@
 const STORE_KEY = "staati-presentation-settings";
+const HOSTED_EXPORT_URL = "https://staati.vercel.app/";
 const { slides, brand } = window.STAATI_PRESENTATION;
 const DEFAULT_LOGOS = {
   light: "assets/brand/logo-black.svg",
@@ -15,6 +16,7 @@ const state = {
   exportQuality: "normal",
   settingsOpen: false,
   exportModal: null,
+  pendingAutoExport: false,
   settings: {
     organizationName: brand.organizationName,
     presenterName: brand.presenterName,
@@ -960,6 +962,10 @@ async function slideToPng(index, quality = state.exportQuality) {
 
 async function exportPdf() {
   if (state.exporting) return;
+  if (shouldUseHostedExport()) {
+    redirectToHostedExport();
+    return;
+  }
   try {
     state.exporting = true;
     updateExport(
@@ -1010,13 +1016,34 @@ async function exportPdf() {
       { current: slides.length, total: slides.length }
     );
   } catch (error) {
-    updateExport("Export failed.", error?.message || "Unknown export error.", false, true);
+    updateExport("Export failed.", readableError(error), false, true);
   } finally {
     document.body.classList.remove("export-freeze");
     exportRoot.innerHTML = "";
     state.exporting = false;
     render();
   }
+}
+
+function shouldUseHostedExport() {
+  return location.protocol === "file:";
+}
+
+function redirectToHostedExport() {
+  updateExport(
+    state.lang === "ar" ? "جاري فتح النسخة المباشرة." : "Opening live export.",
+    state.lang === "ar"
+      ? "Safari يمنع تصدير PDF من الملفات المحلية. بنفتح نفس الصفحة على الرابط المباشر ونبدأ التصدير تلقائياً."
+      : "Safari blocks PDF export from local files. The live version will open in this tab and start exporting automatically.",
+    false,
+    false,
+    { current: 0, total: slides.length }
+  );
+  const url = new URL(HOSTED_EXPORT_URL);
+  url.searchParams.set("lang", state.lang);
+  url.searchParams.set("slide", String(state.current + 1));
+  url.searchParams.set("export", "pdf");
+  window.location.href = url.toString();
 }
 
 async function exportCurrentPng() {
@@ -1076,6 +1103,18 @@ function updateExport(message, detail = "", done = false, error = false, progres
   render();
 }
 
+function readableError(error) {
+  if (!error) return state.lang === "ar" ? "تعذر إنشاء ملف PDF." : "Could not create the PDF.";
+  if (typeof error === "string") return error;
+  if (error.message) return error.message;
+  if (error.name) return error.name;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return state.lang === "ar" ? "تعذر إنشاء ملف PDF." : "Could not create the PDF.";
+  }
+}
+
 function downloadDataUrl(dataUrl, filename) {
   const link = document.createElement("a");
   link.href = dataUrl;
@@ -1107,8 +1146,13 @@ function initFromUrl() {
   const slide = Number(params.get("slide"));
   if (lang === "ar" || lang === "en") state.lang = lang;
   if (slide >= 1 && slide <= slides.length) state.current = slide - 1;
+  if (params.get("export") === "pdf") state.pendingAutoExport = true;
 }
 
 loadSettings();
 initFromUrl();
 render();
+if (state.pendingAutoExport) {
+  state.pendingAutoExport = false;
+  setTimeout(exportPdf, 400);
+}
