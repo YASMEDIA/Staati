@@ -40,10 +40,6 @@ const assetDataUrlCache = new Map();
 const app = document.getElementById("app");
 const exportRoot = document.getElementById("export-root");
 
-slides.forEach((slide, index) => {
-  slide.number = index + 1;
-});
-
 function t(value) {
   if (!value) return "";
   if (typeof value === "string") return value;
@@ -157,9 +153,6 @@ function renderSlideType(slide) {
     fragmented: renderFragmented,
     bullets: renderBullets,
     statement: renderStatement,
-    productOverview: renderProductOverview,
-    partsMap: renderPartsMap,
-    capability: renderCapability,
     journey: renderJourney,
     layers: renderLayers,
     athlete: renderAthlete,
@@ -279,97 +272,6 @@ function renderStatement(slide) {
             <span class="muted">${pad(i + 1)}</span><span>${x}</span><span class="staati-dot"></span>
           </div>
         `).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderProductOverview(slide) {
-  return `
-    <div class="orbital !w-[34%] !top-[20%] opacity-80"></div>
-    <div class="slide-content grid grid-cols-[1fr_.82fr] gap-[6%] items-center">
-      <div>
-        ${sectionLabel(slide)}
-        <h2 class="slide-title mt-[34px] max-w-[1180px]">${splitLines(t(slide.title))}</h2>
-        <p class="slide-subtitle max-w-[900px]">${splitLines(t(slide.body))}</p>
-      </div>
-      <div class="panel p-[28px]">
-        <div class="text-[clamp(13px,1vw,20px)] font-bold text-staati-blue">${escapeHtml(t(slide.kicker))}</div>
-        <div class="mt-[20px] grid gap-[12px]">
-          ${list(slide.bullets).map((item, index) => `
-            <div class="mini-glass p-[15px] flex items-center gap-[14px]">
-              <span class="text-staati-blue font-bold">${pad(index + 1)}</span>
-              <span class="font-semibold">${escapeHtml(item)}</span>
-            </div>
-          `).join("")}
-        </div>
-        <div class="mt-[22px] grid grid-cols-2 gap-[12px]">
-          ${list(slide.meta).map((item) => `
-            <div class="mini-glass p-[16px]">
-              <div class="text-[11px] uppercase tracking-[.08em] text-staati-muted">${escapeHtml(item.label)}</div>
-              <div class="mt-[6px] text-[clamp(13px,1vw,20px)] font-bold">${escapeHtml(item.value)}</div>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderPartsMap(slide) {
-  return `
-    <div class="slide-content flex flex-col justify-center">
-      ${sectionLabel(slide)}
-      <div class="flex items-end justify-between gap-[40px]">
-        <h2 class="slide-title mt-[30px] max-w-[980px]">${splitLines(t(slide.title))}</h2>
-        <p class="slide-subtitle mb-[8px] max-w-[560px]">${splitLines(t(slide.body))}</p>
-      </div>
-      <div class="mt-[50px] grid grid-cols-5 gap-[14px]">
-        ${list(slide.parts).map((part, index) => `
-          <div class="product-part-card panel">
-            <div class="flex items-center justify-between">
-              <span class="product-part-number">${pad(index + 1)}</span>
-              ${icon(["globe-2", "briefcase-medical", "building-2", "smartphone", "shield-check"][index], 28)}
-            </div>
-            <strong>${escapeHtml(part.title)}</strong>
-            <p>${escapeHtml(part.audience)}</p>
-            <div class="hairline my-[14px]"></div>
-            <span>${escapeHtml(part.summary)}</span>
-          </div>
-        `).join("")}
-      </div>
-      <div class="mt-[34px] grid grid-cols-3 gap-[16px]">
-        ${list(slide.notes).map((note) => `<div class="mini-glass p-[16px] text-[clamp(12px,.92vw,18px)] font-semibold text-staati-muted">${escapeHtml(note)}</div>`).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderCapability(slide) {
-  const sections = list(slide.sections);
-  return `
-    <div class="slide-content flex flex-col justify-center">
-      ${sectionLabel(slide)}
-      <div class="grid grid-cols-[.85fr_1.15fr] gap-[5%] items-start mt-[28px]">
-        <div>
-          <h2 class="slide-title">${splitLines(t(slide.title))}</h2>
-          <p class="slide-subtitle">${splitLines(t(slide.body))}</p>
-          ${slide.link ? `<div class="mt-[34px] inline-flex items-center gap-[10px] border border-staati-blue/50 bg-staati-blue/10 px-[18px] py-[12px] text-staati-blue font-bold">${escapeHtml(t(slide.link))} ${icon("arrow-up-right", 18)}</div>` : ""}
-        </div>
-        <div class="capability-grid" style="--capability-cols:${sections.length > 3 ? 2 : 1}">
-          ${sections.map((section, index) => `
-            <div class="capability-card panel">
-              <div class="flex items-center justify-between gap-[16px]">
-                <span class="capability-kicker">${escapeHtml(section.label || pad(index + 1))}</span>
-                ${icon(["users", "clipboard-check", "dumbbell", "calendar-days", "activity", "message-square", "building-2", "settings-2"][index % 8], 22)}
-              </div>
-              <strong>${escapeHtml(section.title)}</strong>
-              <ul>
-                ${(section.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-              </ul>
-            </div>
-          `).join("")}
-        </div>
       </div>
     </div>
   `;
