@@ -328,7 +328,7 @@ function phoneMockup(title, rows) {
       <div class="text-[13px] text-staati-muted">STAATI</div>
       <div class="mt-[8px] text-[28px] font-bold">${title}</div>
       <div class="mt-[22px] grid gap-[12px]">
-        ${rows.map((row, i) => `<div class="bg-white/8 border border-white/10 p-[14px]"><div class="text-[12px] text-staati-muted">${pad(i + 1)}</div><div class="mt-[5px] font-semibold">${row}</div></div>`).join("")}
+        ${rows.map((row, i) => `<div class="mini-glass p-[14px]"><div class="text-[12px] text-staati-muted">${pad(i + 1)}</div><div class="mt-[5px] font-semibold">${row}</div></div>`).join("")}
       </div>
     </div>
   `;
@@ -346,10 +346,10 @@ function renderWorkspace(slide) {
           <strong>STAATI Medical</strong><span class="text-staati-blue font-bold">${escapeHtml(t(slide.label))}</span>
         </div>
         <div class="mt-[18px] grid grid-cols-[.65fr_1.35fr] gap-[18px]">
-          <div class="grid gap-[10px]">${list(slide.bullets).slice(0, 5).map(x => `<div class="bg-[#F2F4FB] p-[13px] text-[14px] font-semibold">${escapeHtml(x)}</div>`).join("")}</div>
+          <div class="grid gap-[10px]">${list(slide.bullets).slice(0, 5).map(x => `<div class="mini-glass p-[13px] text-[14px] font-semibold">${escapeHtml(x)}</div>`).join("")}</div>
           <div class="grid gap-[12px]">
-            <div class="h-[120px] bg-[#0C0D10] text-white p-[18px] flex justify-between"><span>ACL · Week 14</span><span class="text-staati-blue">Signed</span></div>
-            <div class="grid grid-cols-2 gap-[12px]">${list(slide.bullets).slice(5).map(x => `<div class="bg-[#F2F4FB] p-[15px] text-[14px]">${escapeHtml(x)}</div>`).join("")}</div>
+            <div class="mini-glass h-[120px] p-[18px] flex justify-between"><span>ACL · Week 14</span><span class="text-staati-blue">Signed</span></div>
+            <div class="grid grid-cols-2 gap-[12px]">${list(slide.bullets).slice(5).map(x => `<div class="mini-glass p-[15px] text-[14px]">${escapeHtml(x)}</div>`).join("")}</div>
           </div>
         </div>
       </div>
@@ -374,7 +374,7 @@ function renderCheckins(slide) {
             <g fill="rgba(146,152,172,.45)">${[70,130,190].map(y => `<line x1="20" x2="620" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="1"/>`).join("")}</g>
           </svg>
           <div class="grid grid-cols-2 gap-[12px]">
-            ${list(slide.metrics).map((m, i) => `<div class="bg-white/7 border border-white/10 p-[14px]"><strong class="text-[24px]">${[2, 7, 8, 6, 3, 82][i]}${i === 5 ? "%" : "/10"}</strong><div class="muted text-[13px]">${escapeHtml(m)}</div></div>`).join("")}
+            ${list(slide.metrics).map((m, i) => `<div class="mini-glass p-[14px]"><strong class="text-[24px]">${[2, 7, 8, 6, 3, 82][i]}${i === 5 ? "%" : "/10"}</strong><div class="muted text-[13px]">${escapeHtml(m)}</div></div>`).join("")}
           </div>
         </div>
       </div>
