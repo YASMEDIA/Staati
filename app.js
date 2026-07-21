@@ -618,6 +618,13 @@ function field(name, label, type = "text") {
 
 function renderExportModal() {
   if (!state.exportModal) return "";
+  const progress = state.exportModal.progress;
+  const percent = progress?.total ? Math.round((progress.current / progress.total) * 100) : 0;
+  const count = progress?.total
+    ? state.lang === "ar"
+      ? `${progress.current} من ${progress.total}`
+      : `${progress.current} of ${progress.total}`
+    : "";
   return `
     <div class="modal-backdrop no-export" role="dialog" aria-modal="true" aria-label="Export progress">
       <div class="modal">
@@ -629,6 +636,17 @@ function renderExportModal() {
             ${state.exportModal.detail ? `<div class="mt-1 text-sm text-staati-muted">${escapeHtml(state.exportModal.detail)}</div>` : ""}
           </div>
         </div>
+        ${progress?.total ? `
+          <div class="export-progress mt-6">
+            <div class="export-progress-row">
+              <span>${escapeHtml(count)}</span>
+              <span>${percent}%</span>
+            </div>
+            <div class="export-progress-track" aria-hidden="true">
+              <div class="export-progress-bar" style="width:${percent}%"></div>
+            </div>
+          </div>
+        ` : ""}
         <div class="mt-6 flex justify-end gap-2">
           ${state.exportModal.error ? `<button class="ui-btn" id="retryExport">${icon("refresh-cw")} Retry</button>` : ""}
           <button class="ui-btn" id="closeExport">${state.exportModal.done || state.exportModal.error ? "Close" : "Hide"}</button>
@@ -942,191 +960,62 @@ async function slideToPng(index, quality = state.exportQuality) {
 
 async function exportPdf() {
   if (state.exporting) return;
-  const previewWindow = openPdfPreviewWindow();
   try {
     state.exporting = true;
-    state.exportModal = { message: "Preparing assets." };
-    updatePdfPreviewWindow(
-      previewWindow,
-      0,
-      slides.length,
-      state.lang === "ar" ? "جاري تجهيز الصور والخطوط." : "Preparing images and fonts."
+    updateExport(
+      state.lang === "ar" ? "جاري تجهيز ملف PDF." : "Preparing PDF.",
+      state.lang === "ar" ? "خلك بنفس الصفحة، بعدها ينزل الملف على جهازك." : "Stay on this page. The PDF will download to your device.",
+      false,
+      false,
+      { current: 0, total: slides.length }
     );
     render();
     await waitForAssets();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [1920, 1080], compress: false });
     for (let index = 0; index < slides.length; index += 1) {
-      updatePdfPreviewWindow(
-        previewWindow,
-        index,
-        slides.length,
-        state.lang === "ar" ? `جاري تجهيز الشريحة ${index + 1}.` : `Rendering slide ${index + 1}.`
+      updateExport(
+        state.lang === "ar" ? `جاري تجهيز الشريحة ${index + 1}.` : `Rendering slide ${index + 1}.`,
+        state.lang === "ar" ? "الصور والخطوط تنحفظ داخل ملف PDF." : "Images and fonts are being embedded in the PDF.",
+        false,
+        false,
+        { current: index, total: slides.length }
       );
       const dataUrl = await slideToPng(index);
       if (index > 0) pdf.addPage([1920, 1080], "landscape");
       pdf.addImage(dataUrl, "PNG", 0, 0, 1920, 1080, undefined, "NONE");
-      updatePdfPreviewWindow(
-        previewWindow,
-        index + 1,
-        slides.length,
-        state.lang === "ar" ? `تم تجهيز ${index + 1} من ${slides.length}.` : `Prepared ${index + 1} of ${slides.length}.`
+      updateExport(
+        state.lang === "ar" ? `تم تجهيز ${index + 1} من ${slides.length}.` : `Prepared ${index + 1} of ${slides.length}.`,
+        "",
+        false,
+        false,
+        { current: index + 1, total: slides.length }
       );
     }
-    updateExport("Creating PDF.");
-    updatePdfPreviewWindow(
-      previewWindow,
-      slides.length,
-      slides.length,
-      state.lang === "ar" ? "جاري فتح ملف PDF." : "Opening PDF."
+    updateExport(
+      state.lang === "ar" ? "جاري تنزيل ملف PDF." : "Downloading PDF.",
+      "",
+      false,
+      false,
+      { current: slides.length, total: slides.length }
     );
     const filename = `STAATI-B2B-Presentation-${state.lang.toUpperCase()}.pdf`;
     const blob = pdf.output("blob");
-    const url = URL.createObjectURL(blob);
-    if (previewWindow) {
-      previewWindow.location.href = url;
-      setTimeout(() => URL.revokeObjectURL(url), 10 * 60 * 1000);
-      updateExport(
-        state.lang === "ar" ? "تم فتح ملف PDF." : "PDF opened.",
-        state.lang === "ar" ? "استخدم زر التنزيل أو المشاركة في المتصفح واحفظه محلياً." : "Use the browser download or share button to save it locally.",
-        true
-      );
-    } else {
-      downloadBlob(blob, filename);
-      updateExport(
-        state.lang === "ar" ? "تم تجهيز ملف PDF." : "PDF ready.",
-        state.lang === "ar" ? "المتصفح منع فتح تبويب جديد، لذلك تم تنزيل الملف. اختر Save locally إذا ظهر لك الخيار." : "The browser blocked a new tab, so the file was downloaded. Choose Save locally if prompted.",
-        true
-      );
-    }
+    downloadBlob(blob, filename);
+    updateExport(
+      state.lang === "ar" ? "تم تنزيل ملف PDF." : "PDF downloaded.",
+      state.lang === "ar" ? "إذا فتح لك خيار الحفظ في الآيفون، اختر Save to Files." : "If your phone asks where to save it, choose Save to Files.",
+      true,
+      false,
+      { current: slides.length, total: slides.length }
+    );
   } catch (error) {
-    if (previewWindow) previewWindow.close();
     updateExport("Export failed.", error?.message || "Unknown export error.", false, true);
   } finally {
     document.body.classList.remove("export-freeze");
     exportRoot.innerHTML = "";
     state.exporting = false;
     render();
-  }
-}
-
-function openPdfPreviewWindow() {
-  const win = window.open("", "_blank");
-  if (!win) return null;
-  const dir = state.lang === "ar" ? "rtl" : "ltr";
-  const message = state.lang === "ar" ? "جاري تجهيز ملف PDF..." : "Preparing PDF...";
-  const detail = state.lang === "ar" ? "لا تغلق هذه الصفحة، سيتم فتح الملف هنا تلقائياً." : "Keep this page open. The PDF will appear here automatically.";
-  const slideText = state.lang === "ar" ? "0 من 18" : "0 of 18";
-  win.document.write(`
-    <!doctype html>
-    <html lang="${state.lang}" dir="${dir}">
-      <head>
-        <meta charset="utf-8" />
-        <title>STAATI PDF</title>
-        <style>
-          body {
-            margin: 0;
-            min-height: 100vh;
-            display: grid;
-            place-items: center;
-            background:
-              radial-gradient(circle at 70% 22%, rgba(82, 108, 244, 0.24), transparent 32%),
-              linear-gradient(135deg, #07080c, #111522 55%, #08090d);
-            color: #fff;
-            font-family: Inter, system-ui, sans-serif;
-          }
-          main {
-            width: min(520px, calc(100vw - 40px));
-            padding: 34px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 28px;
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-            backdrop-filter: blur(18px) saturate(1.4);
-            -webkit-backdrop-filter: blur(18px) saturate(1.4);
-          }
-          strong {
-            display: block;
-            font-size: 28px;
-          }
-          p {
-            color: #9298ac;
-            line-height: 1.5;
-          }
-          .loader {
-            width: 76px;
-            height: 76px;
-            margin: 0 auto 22px;
-            border-radius: 999px;
-            border: 8px solid rgba(255, 255, 255, 0.12);
-            border-top-color: #526cf4;
-            animation: spin 0.85s linear infinite;
-          }
-          .progress-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            margin-top: 26px;
-            color: #cbd1e6;
-            font-size: 15px;
-            font-weight: 800;
-          }
-          .track {
-            height: 11px;
-            margin-top: 12px;
-            overflow: hidden;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.1);
-          }
-          .bar {
-            width: 0%;
-            height: 100%;
-            border-radius: inherit;
-            background: linear-gradient(90deg, #526cf4, #8ea0ff);
-            transition: width 0.25s ease;
-          }
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        </style>
-      </head>
-      <body>
-        <main>
-          <div class="loader" aria-hidden="true"></div>
-          <strong id="status">${escapeHtml(message)}</strong>
-          <p>${escapeHtml(detail)}</p>
-          <div class="progress-row">
-            <span id="count">${escapeHtml(slideText)}</span>
-            <span id="percent">0%</span>
-          </div>
-          <div class="track" aria-hidden="true">
-            <div class="bar" id="bar"></div>
-          </div>
-        </main>
-      </body>
-    </html>
-  `);
-  win.document.close();
-  return win;
-}
-
-function updatePdfPreviewWindow(win, current, total, message) {
-  if (!win || win.closed) return;
-  try {
-    const doc = win.document;
-    const clamped = Math.max(0, Math.min(current, total));
-    const percent = total ? Math.round((clamped / total) * 100) : 0;
-    const status = doc.getElementById("status");
-    const count = doc.getElementById("count");
-    const percentNode = doc.getElementById("percent");
-    const bar = doc.getElementById("bar");
-    if (status && message) status.textContent = message;
-    if (count) count.textContent = state.lang === "ar" ? `${clamped} من ${total}` : `${clamped} of ${total}`;
-    if (percentNode) percentNode.textContent = `${percent}%`;
-    if (bar) bar.style.width = `${percent}%`;
-  } catch {
-    // The preview becomes cross-origin after the PDF blob opens.
   }
 }
 
@@ -1182,8 +1071,8 @@ async function exportZip() {
   }
 }
 
-function updateExport(message, detail = "", done = false, error = false) {
-  state.exportModal = { message, detail, done, error };
+function updateExport(message, detail = "", done = false, error = false, progress = null) {
+  state.exportModal = { message, detail, done, error, progress };
   render();
 }
 
