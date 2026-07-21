@@ -942,6 +942,7 @@ async function slideToPng(index, quality = state.exportQuality) {
 
 async function exportPdf() {
   if (state.exporting) return;
+  const previewWindow = openPdfPreviewWindow();
   try {
     state.exporting = true;
     state.exportModal = { message: "Preparing assets." };
@@ -955,9 +956,27 @@ async function exportPdf() {
       pdf.addImage(dataUrl, "PNG", 0, 0, 1920, 1080, undefined, "NONE");
     }
     updateExport("Creating PDF.");
-    pdf.save(`STAATI-B2B-Presentation-${state.lang.toUpperCase()}.pdf`);
-    updateExport("Download ready.", "The PDF pages are full-slide PNG images.", true);
+    const filename = `STAATI-B2B-Presentation-${state.lang.toUpperCase()}.pdf`;
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+    if (previewWindow) {
+      previewWindow.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 10 * 60 * 1000);
+      updateExport(
+        state.lang === "ar" ? "تم فتح ملف PDF." : "PDF opened.",
+        state.lang === "ar" ? "استخدم زر التنزيل أو المشاركة في المتصفح واحفظه محلياً." : "Use the browser download or share button to save it locally.",
+        true
+      );
+    } else {
+      downloadBlob(blob, filename);
+      updateExport(
+        state.lang === "ar" ? "تم تجهيز ملف PDF." : "PDF ready.",
+        state.lang === "ar" ? "المتصفح منع فتح تبويب جديد، لذلك تم تنزيل الملف. اختر Save locally إذا ظهر لك الخيار." : "The browser blocked a new tab, so the file was downloaded. Choose Save locally if prompted.",
+        true
+      );
+    }
   } catch (error) {
+    if (previewWindow) previewWindow.close();
     updateExport("Export failed.", error?.message || "Unknown export error.", false, true);
   } finally {
     document.body.classList.remove("export-freeze");
@@ -965,6 +984,55 @@ async function exportPdf() {
     state.exporting = false;
     render();
   }
+}
+
+function openPdfPreviewWindow() {
+  const win = window.open("", "_blank");
+  if (!win) return null;
+  const dir = state.lang === "ar" ? "rtl" : "ltr";
+  const message = state.lang === "ar" ? "جاري تجهيز ملف PDF..." : "Preparing PDF...";
+  const detail = state.lang === "ar" ? "لا تغلق هذه الصفحة، سيتم فتح الملف هنا تلقائياً." : "Keep this page open. The PDF will appear here automatically.";
+  win.document.write(`
+    <!doctype html>
+    <html lang="${state.lang}" dir="${dir}">
+      <head>
+        <meta charset="utf-8" />
+        <title>STAATI PDF</title>
+        <style>
+          body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #0c0d10;
+            color: #fff;
+            font-family: Inter, system-ui, sans-serif;
+          }
+          main {
+            max-width: 520px;
+            padding: 32px;
+            text-align: center;
+          }
+          strong {
+            display: block;
+            font-size: 28px;
+          }
+          p {
+            color: #9298ac;
+            line-height: 1.5;
+          }
+        </style>
+      </head>
+      <body>
+        <main>
+          <strong>${escapeHtml(message)}</strong>
+          <p>${escapeHtml(detail)}</p>
+        </main>
+      </body>
+    </html>
+  `);
+  win.document.close();
+  return win;
 }
 
 async function exportCurrentPng() {
