@@ -110,7 +110,7 @@ function brandChrome(slide) {
   return `
     <div class="brand-marker">
       <span class="staati-dot"></span>
-      ${brandLogo("max-h-[24px] max-w-[132px] object-contain", tone)}
+      ${brandLogo("max-h-[42px] max-w-[230px] object-contain", tone)}
     </div>
     ${state.settings.slideNumbers ? `<div class="slide-number">P. ${pad(slide.number)} / ${pad(slides.length)}</div>` : ""}
   `;
