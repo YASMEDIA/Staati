@@ -946,16 +946,40 @@ async function exportPdf() {
   try {
     state.exporting = true;
     state.exportModal = { message: "Preparing assets." };
+    updatePdfPreviewWindow(
+      previewWindow,
+      0,
+      slides.length,
+      state.lang === "ar" ? "جاري تجهيز الصور والخطوط." : "Preparing images and fonts."
+    );
     render();
     await waitForAssets();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [1920, 1080], compress: false });
     for (let index = 0; index < slides.length; index += 1) {
+      updatePdfPreviewWindow(
+        previewWindow,
+        index,
+        slides.length,
+        state.lang === "ar" ? `جاري تجهيز الشريحة ${index + 1}.` : `Rendering slide ${index + 1}.`
+      );
       const dataUrl = await slideToPng(index);
       if (index > 0) pdf.addPage([1920, 1080], "landscape");
       pdf.addImage(dataUrl, "PNG", 0, 0, 1920, 1080, undefined, "NONE");
+      updatePdfPreviewWindow(
+        previewWindow,
+        index + 1,
+        slides.length,
+        state.lang === "ar" ? `تم تجهيز ${index + 1} من ${slides.length}.` : `Prepared ${index + 1} of ${slides.length}.`
+      );
     }
     updateExport("Creating PDF.");
+    updatePdfPreviewWindow(
+      previewWindow,
+      slides.length,
+      slides.length,
+      state.lang === "ar" ? "جاري فتح ملف PDF." : "Opening PDF."
+    );
     const filename = `STAATI-B2B-Presentation-${state.lang.toUpperCase()}.pdf`;
     const blob = pdf.output("blob");
     const url = URL.createObjectURL(blob);
@@ -992,6 +1016,7 @@ function openPdfPreviewWindow() {
   const dir = state.lang === "ar" ? "rtl" : "ltr";
   const message = state.lang === "ar" ? "جاري تجهيز ملف PDF..." : "Preparing PDF...";
   const detail = state.lang === "ar" ? "لا تغلق هذه الصفحة، سيتم فتح الملف هنا تلقائياً." : "Keep this page open. The PDF will appear here automatically.";
+  const slideText = state.lang === "ar" ? "0 من 18" : "0 of 18";
   win.document.write(`
     <!doctype html>
     <html lang="${state.lang}" dir="${dir}">
@@ -1004,14 +1029,22 @@ function openPdfPreviewWindow() {
             min-height: 100vh;
             display: grid;
             place-items: center;
-            background: #0c0d10;
+            background:
+              radial-gradient(circle at 70% 22%, rgba(82, 108, 244, 0.24), transparent 32%),
+              linear-gradient(135deg, #07080c, #111522 55%, #08090d);
             color: #fff;
             font-family: Inter, system-ui, sans-serif;
           }
           main {
-            max-width: 520px;
-            padding: 32px;
+            width: min(520px, calc(100vw - 40px));
+            padding: 34px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
           }
           strong {
             display: block;
@@ -1021,18 +1054,80 @@ function openPdfPreviewWindow() {
             color: #9298ac;
             line-height: 1.5;
           }
+          .loader {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 22px;
+            border-radius: 999px;
+            border: 8px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #526cf4;
+            animation: spin 0.85s linear infinite;
+          }
+          .progress-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 26px;
+            color: #cbd1e6;
+            font-size: 15px;
+            font-weight: 800;
+          }
+          .track {
+            height: 11px;
+            margin-top: 12px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+          }
+          .bar {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #526cf4, #8ea0ff);
+            transition: width 0.25s ease;
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
         </style>
       </head>
       <body>
         <main>
-          <strong>${escapeHtml(message)}</strong>
+          <div class="loader" aria-hidden="true"></div>
+          <strong id="status">${escapeHtml(message)}</strong>
           <p>${escapeHtml(detail)}</p>
+          <div class="progress-row">
+            <span id="count">${escapeHtml(slideText)}</span>
+            <span id="percent">0%</span>
+          </div>
+          <div class="track" aria-hidden="true">
+            <div class="bar" id="bar"></div>
+          </div>
         </main>
       </body>
     </html>
   `);
   win.document.close();
   return win;
+}
+
+function updatePdfPreviewWindow(win, current, total, message) {
+  if (!win || win.closed) return;
+  try {
+    const doc = win.document;
+    const clamped = Math.max(0, Math.min(current, total));
+    const percent = total ? Math.round((clamped / total) * 100) : 0;
+    const status = doc.getElementById("status");
+    const count = doc.getElementById("count");
+    const percentNode = doc.getElementById("percent");
+    const bar = doc.getElementById("bar");
+    if (status && message) status.textContent = message;
+    if (count) count.textContent = state.lang === "ar" ? `${clamped} من ${total}` : `${clamped} of ${total}`;
+    if (percentNode) percentNode.textContent = `${percent}%`;
+    if (bar) bar.style.width = `${percent}%`;
+  } catch {
+    // The preview becomes cross-origin after the PDF blob opens.
+  }
 }
 
 async function exportCurrentPng() {
