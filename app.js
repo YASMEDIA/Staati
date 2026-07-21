@@ -221,14 +221,14 @@ function renderFragmented(slide) {
 
 function renderBullets(slide) {
   return `
-    <div class="slide-content grid grid-cols-[.92fr_1.08fr] gap-[7%] items-start">
+    <div class="slide-content grid grid-cols-[.92fr_1.08fr] gap-[7%] items-center">
       <div>
         ${sectionLabel(slide)}
         <h2 class="slide-title mt-[34px]">${splitLines(t(slide.title))}</h2>
       </div>
-      <div class="grid gap-[14px] pt-[72px]">
+      <div class="grid gap-[18px]">
         ${list(slide.bullets).map((item, index) => `
-          <div class="panel flex gap-[18px] items-start p-[18px]">
+          <div class="panel flex gap-[18px] items-start p-[22px]">
             <span class="text-staati-blue font-bold">${pad(index + 1)}</span>
             <span class="text-[clamp(13px,1.1vw,22px)] leading-snug">${escapeHtml(item)}</span>
           </div>
@@ -261,7 +261,7 @@ function renderStatement(slide) {
 
 function renderJourney(slide) {
   return `
-    <div class="slide-content flex flex-col">
+    <div class="slide-content flex flex-col justify-center">
       ${sectionLabel(slide)}
       <h2 class="slide-title mt-[28px] max-w-[1220px]">${splitLines(t(slide.title))}</h2>
       <div class="mt-[58px] grid grid-cols-5 gap-[14px]">
@@ -278,7 +278,7 @@ function renderJourney(slide) {
 
 function renderLayers(slide) {
   return `
-    <div class="slide-content">
+    <div class="slide-content flex flex-col justify-center">
       ${sectionLabel(slide)}
       <h2 class="slide-title mt-[30px] max-w-[1060px]">${splitLines(t(slide.title))}</h2>
       <div class="mt-[54px] grid grid-cols-3 gap-[22px] items-end">
@@ -402,7 +402,7 @@ function renderPrograms(slide) {
 function renderGates(slide) {
   const statuses = state.lang === "ar" ? ["مجتاز", "قيد الانتظار", "غير مجتاز", "موقّع"] : ["Passed", "Pending", "Failed", "Signed"];
   return `
-    <div class="slide-content">
+    <div class="slide-content flex flex-col justify-center">
       ${sectionLabel(slide)}
       <h2 class="slide-title mt-[28px] max-w-[1280px]">${splitLines(t(slide.title))}</h2>
       <div class="mt-[44px] panel overflow-hidden">
@@ -448,11 +448,11 @@ function renderOrganizations(slide) {
 
 function renderEnterprise(slide) {
   return `
-    <div class="slide-content">
+    <div class="slide-content flex flex-col justify-center">
       ${sectionLabel(slide)}
-      <div class="grid grid-cols-[.9fr_1.1fr] gap-[6%]">
+      <div class="grid grid-cols-[.9fr_1.1fr] gap-[6%] items-center mt-[30px]">
         <h2 class="slide-title mt-[28px]">${splitLines(t(slide.title))}</h2>
-        <div class="grid grid-cols-2 gap-[12px] pt-[36px]">
+        <div class="grid grid-cols-2 gap-[12px]">
           ${list(slide.bullets).map((item, index) => `<div class="panel p-[15px]"><span class="text-staati-blue font-bold">${pad(index + 1)}</span><div class="mt-[8px]">${escapeHtml(item)}</div></div>`).join("")}
         </div>
       </div>
@@ -463,9 +463,9 @@ function renderEnterprise(slide) {
 
 function renderPilot(slide) {
   return `
-    <div class="slide-content grid grid-cols-[.9fr_1.1fr] gap-[5%]">
+    <div class="slide-content grid grid-cols-[.9fr_1.1fr] gap-[5%] items-center">
       <div>${sectionLabel(slide)}<h2 class="slide-title mt-[34px]">${splitLines(t(slide.title))}</h2></div>
-      <div class="pt-[26px]">
+      <div>
         ${list(slide.bullets).map((item, index) => `<div class="panel p-[18px] mb-[14px]"><span class="text-staati-blue font-bold">${pad(index + 1)}</span><span class="ms-3">${escapeHtml(item)}</span></div>`).join("")}
         <div class="mt-[24px] grid grid-cols-2 gap-[10px]">${list(slide.metrics).map(x => `<div class="text-[14px] font-semibold text-[#5f6678]">· ${escapeHtml(x)}</div>`).join("")}</div>
       </div>
@@ -495,7 +495,7 @@ function renderClosing(slide) {
 function cardGridSlide(slide, columns, crest = false) {
   const icons = ["repeat-2", "file-heart", "messages-square", "badge-check", "chart-no-axes-combined", "scan-eye", "shield", "activity"];
   return `
-    <div class="slide-content">
+    <div class="slide-content flex flex-col justify-center">
       ${sectionLabel(slide)}
       <h2 class="slide-title mt-[30px] max-w-[1340px]">${splitLines(t(slide.title))}</h2>
       <div class="editorial-card-grid mt-[62px]" style="--card-cols:${columns}">
