@@ -316,7 +316,7 @@ function renderAthlete(slide) {
 
 function phoneImage(src, alt, extra = "") {
   if (!src) return "";
-  return `<div class="mockup-phone small ${extra}"><img src="${assetUrl(src)}" alt="${escapeHtml(alt)}" crossorigin="anonymous" /></div>`;
+  return `<div class="mockup-phone small ${extra}"><img src="${assetUrl(src)}" alt="${escapeHtml(alt)}" /></div>`;
 }
 
 function phoneMockup(title, rows) {
@@ -855,6 +855,15 @@ async function waitForAssets() {
   })));
 }
 
+async function waitForNodeImages(node) {
+  const images = [...node.querySelectorAll("img")];
+  await Promise.all(images.map((img) => new Promise((resolve) => {
+    if (img.complete && img.naturalWidth > 0) return resolve();
+    img.onload = resolve;
+    img.onerror = resolve;
+  })));
+}
+
 function renderExportSlide(index) {
   exportRoot.innerHTML = renderSlide(slides[index], true);
   lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
@@ -863,6 +872,7 @@ function renderExportSlide(index) {
 
 async function slideToPng(index, quality = state.exportQuality) {
   const node = renderExportSlide(index);
+  await waitForNodeImages(node);
   const pixelRatio = quality === "high" ? 2560 / 1920 : 1;
   const width = quality === "high" ? 2560 : 1920;
   const height = quality === "high" ? 1440 : 1080;
