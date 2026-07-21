@@ -664,7 +664,7 @@ function bindEvents() {
   document.getElementById("settingsBtn").onclick = () => { state.settingsOpen = true; render(); };
   document.getElementById("thumbsBtn").onclick = () => { state.thumbsOpen = !state.thumbsOpen; render(); };
   document.getElementById("fullscreenBtn").onclick = enterPresentation;
-  document.getElementById("exportBtn").onclick = showExportMenu;
+  document.getElementById("exportBtn").onclick = exportPdf;
   document.getElementById("prevBtn").onclick = previousSlide;
   document.getElementById("nextBtn").onclick = nextSlide;
 
@@ -839,21 +839,6 @@ function fileToDataUrl(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-}
-
-function showExportMenu() {
-  const choice = prompt(
-    state.lang === "ar"
-      ? "اكتب: pdf أو png أو zip أو link"
-      : "Type: pdf, png, zip, or link",
-    "pdf"
-  );
-  if (!choice) return;
-  const normalized = choice.trim().toLowerCase();
-  if (normalized === "pdf") exportPdf();
-  if (normalized === "png") exportCurrentPng();
-  if (normalized === "zip") exportZip();
-  if (normalized === "link") copyShareLink();
 }
 
 async function waitForAssets() {
