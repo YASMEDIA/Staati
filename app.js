@@ -197,6 +197,7 @@ function renderTimelineSlide(slide) {
 
 function renderFragmented(slide) {
   const items = list(slide.bullets);
+  const waveform = [12, 22, 14, 34, 18, 46, 26, 58, 20, 42, 16, 30, 24, 52, 18, 38, 14, 28, 20, 44, 16, 32, 12, 24];
   return `
     <div class="slide-content grid grid-cols-[1.05fr_.95fr] gap-[5%] items-center">
       <div>
@@ -212,7 +213,9 @@ function renderFragmented(slide) {
             <span class="ms-2">${escapeHtml(item)}</span>
           </div>
         `).join("")}
-        <div class="absolute bottom-[8%] inset-inline-start-[20%] w-[56%] border-t-2 border-dashed border-staati-blue/70"></div>
+        <div class="voice-memo-wave" aria-hidden="true">
+          ${waveform.map((height) => `<span style="height:${height}px"></span>`).join("")}
+        </div>
       </div>
     </div>
   `;
