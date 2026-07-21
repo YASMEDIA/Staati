@@ -33,6 +33,7 @@ const state = {
 let hideControlsTimer = null;
 let touchStartX = 0;
 let touchStartY = 0;
+const assetDataUrlCache = new Map();
 
 const app = document.getElementById("app");
 const exportRoot = document.getElementById("export-root");
@@ -843,6 +844,15 @@ function fileToDataUrl(file) {
   });
 }
 
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function waitForAssets() {
   updateExport("Preparing assets.");
   document.body.classList.add("export-freeze");
@@ -866,6 +876,30 @@ async function waitForNodeImages(node) {
   })));
 }
 
+async function imageSrcToDataUrl(src) {
+  if (!src || /^(data:|blob:)/i.test(src)) return src;
+  if (assetDataUrlCache.has(src)) return assetDataUrlCache.get(src);
+  const response = await fetch(src, { cache: "force-cache" });
+  if (!response.ok) throw new Error(`Image failed to load: ${src}`);
+  const dataUrl = await blobToDataUrl(await response.blob());
+  assetDataUrlCache.set(src, dataUrl);
+  return dataUrl;
+}
+
+async function inlineNodeImages(node) {
+  const images = [...node.querySelectorAll("img")];
+  await Promise.all(images.map(async (img) => {
+    const currentSrc = img.currentSrc || img.src;
+    try {
+      const dataUrl = await imageSrcToDataUrl(currentSrc);
+      if (dataUrl && img.src !== dataUrl) img.src = dataUrl;
+    } catch {
+      // Keep the original source if conversion fails; html-to-image may still handle it.
+    }
+  }));
+  await waitForNodeImages(node);
+}
+
 function renderExportSlide(index) {
   exportRoot.innerHTML = renderSlide(slides[index], true);
   lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
@@ -874,7 +908,7 @@ function renderExportSlide(index) {
 
 async function slideToPng(index, quality = state.exportQuality) {
   const node = renderExportSlide(index);
-  await waitForNodeImages(node);
+  await inlineNodeImages(node);
   const pixelRatio = quality === "high" ? 2560 / 1920 : 1;
   const width = quality === "high" ? 2560 : 1920;
   const height = quality === "high" ? 1440 : 1080;
