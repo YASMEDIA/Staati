@@ -598,6 +598,30 @@ body[dir="rtl"] .dashboard-feature-title {
   cursor: not-allowed;
 }
 
+.language-toggle {
+  position: fixed;
+  top: 24px;
+  inset-inline-end: 24px;
+  z-index: 32;
+  min-width: 54px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  background: rgba(10, 11, 14, 0.68);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.language-toggle:hover {
+  background: rgba(82, 108, 244, 0.24);
+}
+
 .deck-controls {
   left: 50%;
   bottom: 18px;
@@ -1054,6 +1078,14 @@ body[dir="rtl"] .thumb-panel {
 
   .ui-label {
     display: none;
+  }
+
+  .language-toggle {
+    top: 14px;
+    inset-inline-end: 14px;
+    min-width: 48px;
+    height: 36px;
+    font-size: 12px;
   }
 
   .thumb-panel {

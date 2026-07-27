@@ -624,6 +624,14 @@ function renderControls() {
   `;
 }
 
+function renderLanguageToggle() {
+  return `
+    <button class="language-toggle no-export" id="langBtn" aria-label="Switch language">
+      ${state.lang === "en" ? "AR" : "EN"}
+    </button>
+  `;
+}
+
 function renderThumbs() {
   return `
     <aside class="thumb-panel no-export ${state.thumbsOpen ? "open" : ""}" aria-label="Slide thumbnails">
@@ -729,6 +737,7 @@ function render() {
 
   app.innerHTML = `
     <div class="deck-shell">
+      ${renderLanguageToggle()}
       <main class="deck-scroll" id="deckScroll">
         ${slides.map((slide, index) => `
           <section class="slide-section ${index === state.current ? "active" : ""}" data-index="${index}">
