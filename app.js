@@ -972,6 +972,8 @@ async function waitForNodeImages(node) {
 
 async function imageSrcToDataUrl(src) {
   if (!src || /^(data:|blob:)/i.test(src)) return src;
+  const embedded = embeddedAssetUrl(src);
+  if (embedded) return embedded;
   if (assetDataUrlCache.has(src)) return assetDataUrlCache.get(src);
   const response = await fetch(src, { cache: "force-cache" });
   if (!response.ok) throw new Error(`Image failed to load: ${src}`);
