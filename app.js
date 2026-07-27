@@ -618,7 +618,7 @@ function renderControls() {
   return `
     <nav class="deck-controls no-export control-cluster" aria-label="Slide navigation">
       <button class="ui-btn" id="prevBtn" aria-label="Previous slide">${icon(prevIcon)}</button>
-      <span class="px-2 text-sm font-bold" dir="ltr">${pad(state.current + 1)} / ${pad(slides.length)}</span>
+      <span class="px-2 text-sm font-bold" id="slideCounter" dir="ltr">${pad(state.current + 1)} / ${pad(slides.length)}</span>
       <button class="ui-btn" id="nextBtn" aria-label="Next slide">${icon(nextIcon)}</button>
     </nav>
   `;
@@ -822,6 +822,8 @@ function handleScroll(event) {
 
 function updateActiveOnly() {
   document.querySelectorAll(".slide-section").forEach((section, index) => section.classList.toggle("active", index === state.current));
+  const counter = document.getElementById("slideCounter");
+  if (counter) counter.textContent = `${pad(state.current + 1)} / ${pad(slides.length)}`;
 }
 
 function scrollToCurrent(smooth = true) {
