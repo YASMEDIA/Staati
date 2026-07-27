@@ -186,6 +186,19 @@ body[dir="rtl"] .slide-title {
   line-height: 1.08;
 }
 
+.dashboard-feature-title {
+  font-family: "Space Grotesk", Inter, "IBM Plex Sans Arabic", sans-serif;
+  font-size: clamp(28px, 4vw, 78px);
+  line-height: 1.02;
+  letter-spacing: 0;
+  font-weight: 800;
+}
+
+body[dir="rtl"] .dashboard-feature-title {
+  font-family: "IBM Plex Sans Arabic", Inter, sans-serif;
+  line-height: 1.12;
+}
+
 .slide-subtitle {
   margin-top: 28px;
   max-width: 720px;
@@ -195,6 +208,7 @@ body[dir="rtl"] .slide-title {
 }
 
 .slide-title,
+.dashboard-feature-title,
 .slide-subtitle,
 .section-label {
   animation: textRise 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -470,6 +484,66 @@ body[dir="rtl"] .slide-title {
   font-family: "Space Grotesk", Inter, sans-serif;
   font-size: clamp(24px, 2.45vw, 52px);
   line-height: 1;
+}
+
+.dashboard-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--shot-cols), minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dashboard-shot {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 26px 72px rgba(0, 0, 0, 0.22);
+}
+
+.slide-light .dashboard-shot {
+  border-color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 20px 54px rgba(72, 83, 118, 0.13);
+}
+
+.dashboard-shot img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 6.6;
+  object-fit: cover;
+  object-position: left top;
+}
+
+.dashboard-shot.hero-shot img {
+  aspect-ratio: 1.42;
+}
+
+.dashboard-shot figcaption {
+  position: absolute;
+  inset-inline: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: rgba(8, 9, 12, 0.78);
+  color: #fff;
+  font-size: clamp(10px, .74vw, 14px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.slide-light .dashboard-shot figcaption {
+  background: rgba(8, 9, 12, 0.82);
 }
 
 .deck-header,

@@ -40,6 +40,10 @@ const assetDataUrlCache = new Map();
 const app = document.getElementById("app");
 const exportRoot = document.getElementById("export-root");
 
+slides.forEach((slide, index) => {
+  slide.number = index + 1;
+});
+
 function t(value) {
   if (!value) return "";
   if (typeof value === "string") return value;
@@ -155,6 +159,8 @@ function renderSlideType(slide) {
     statement: renderStatement,
     journey: renderJourney,
     layers: renderLayers,
+    coachDashboard: renderCoachDashboard,
+    dashboardFeature: renderDashboardFeature,
     athlete: renderAthlete,
     workspace: renderWorkspace,
     checkins: renderCheckins,
@@ -308,6 +314,61 @@ function renderLayers(slide) {
         `).join("")}
       </div>
       <div class="mx-auto mt-[34px] w-[54%] border border-staati-blue/50 bg-staati-blue/10 p-[20px] text-center text-[clamp(15px,1.2vw,24px)] font-bold text-staati-blue">${escapeHtml(t(slide.notes))}</div>
+    </div>
+  `;
+}
+
+function renderCoachDashboard(slide) {
+  return `
+    <div class="slide-content grid grid-cols-[.78fr_1.22fr] gap-[5%] items-center">
+      <div>
+        ${sectionLabel(slide)}
+        <h2 class="slide-title mt-[34px]">${splitLines(t(slide.title))}</h2>
+        <p class="slide-subtitle">${splitLines(t(slide.body))}</p>
+        <div class="mt-[30px] grid gap-[10px]">
+          ${list(slide.bullets).map((item, index) => `
+            <div class="panel p-[14px] flex items-center gap-[14px]">
+              <span class="text-staati-blue font-bold">${pad(index + 1)}</span>
+              <span class="text-[clamp(12px,.92vw,18px)] font-semibold">${escapeHtml(item)}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="dashboard-shot hero-shot">
+        <img src="${assetUrl(slide.image)}" alt="${escapeHtml(t(slide.alt) || t(slide.title))}" />
+      </div>
+    </div>
+  `;
+}
+
+function renderDashboardFeature(slide) {
+  const shots = slide.images || [];
+  const imageCount = shots.length;
+  return `
+    <div class="slide-content flex flex-col justify-center">
+      <div class="grid grid-cols-[.82fr_1.18fr] gap-[5%] items-end">
+        <div>
+          ${sectionLabel(slide)}
+          <h2 class="dashboard-feature-title mt-[24px] max-w-[940px]">${splitLines(t(slide.title))}</h2>
+          <p class="slide-subtitle">${splitLines(t(slide.body))}</p>
+        </div>
+        <div class="grid grid-cols-2 gap-[12px]">
+          ${list(slide.bullets).map((item, index) => `
+            <div class="mini-glass p-[15px] flex gap-[12px] items-start">
+              <span class="text-staati-blue font-bold">${pad(index + 1)}</span>
+              <span class="text-[clamp(12px,.92vw,18px)] font-semibold leading-snug">${escapeHtml(item)}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="dashboard-shot-grid mt-[30px]" style="--shot-cols:${Math.min(imageCount, 3)}">
+        ${shots.map((shot) => `
+          <figure class="dashboard-shot">
+            <img src="${assetUrl(shot.src)}" alt="${escapeHtml(t(shot.label))}" />
+            <figcaption>${escapeHtml(t(shot.label))}</figcaption>
+          </figure>
+        `).join("")}
+      </div>
     </div>
   `;
 }
@@ -502,9 +563,9 @@ function renderClosing(slide) {
         <div class="mt-[42px] inline-flex min-w-[420px] items-center justify-center rounded-full border border-staati-blue/60 bg-staati-blue px-[44px] py-[24px] text-center text-[clamp(15px,1.15vw,24px)] font-bold shadow-[0_18px_42px_rgba(82,108,244,.28)]">${escapeHtml(t(slide.cta))}</div>
       </div>
       <div class="grid grid-cols-3 gap-[20px] text-[clamp(11px,.8vw,16px)] text-white/62">
-        <span>${escapeHtml(state.settings.website)}</span>
-        <span>${escapeHtml(state.settings.email)}</span>
-        <span>${escapeHtml(state.settings.phone)}</span>
+        <span dir="ltr">${escapeHtml(state.settings.website)}</span>
+        <span dir="ltr">${escapeHtml(state.settings.email)}</span>
+        <span dir="ltr">${escapeHtml(state.settings.phone)}</span>
       </div>
     </div>
   `;
