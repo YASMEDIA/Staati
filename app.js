@@ -729,9 +729,6 @@ function render() {
 
   app.innerHTML = `
     <div class="deck-shell">
-      <div class="progress-track no-export" style="width:${((state.current + 1) / slides.length) * 100}%"></div>
-      ${renderHeader()}
-      ${renderThumbs()}
       <main class="deck-scroll" id="deckScroll">
         ${slides.map((slide, index) => `
           <section class="slide-section ${index === state.current ? "active" : ""}" data-index="${index}">
@@ -757,11 +754,16 @@ function updateDeckScale() {
 }
 
 function bindEvents() {
-  document.getElementById("langBtn").onclick = () => setLanguage(state.lang === "en" ? "ar" : "en");
-  document.getElementById("settingsBtn").onclick = () => { state.settingsOpen = true; render(); };
-  document.getElementById("thumbsBtn").onclick = () => { state.thumbsOpen = !state.thumbsOpen; render(); };
-  document.getElementById("fullscreenBtn").onclick = enterPresentation;
-  document.getElementById("exportBtn").onclick = exportPdf;
+  const langBtn = document.getElementById("langBtn");
+  if (langBtn) langBtn.onclick = () => setLanguage(state.lang === "en" ? "ar" : "en");
+  const settingsBtn = document.getElementById("settingsBtn");
+  if (settingsBtn) settingsBtn.onclick = () => { state.settingsOpen = true; render(); };
+  const thumbsBtn = document.getElementById("thumbsBtn");
+  if (thumbsBtn) thumbsBtn.onclick = () => { state.thumbsOpen = !state.thumbsOpen; render(); };
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  if (fullscreenBtn) fullscreenBtn.onclick = enterPresentation;
+  const exportBtn = document.getElementById("exportBtn");
+  if (exportBtn) exportBtn.onclick = exportPdf;
   document.getElementById("prevBtn").onclick = previousSlide;
   document.getElementById("nextBtn").onclick = nextSlide;
 
@@ -810,7 +812,6 @@ function handleScroll(event) {
 }
 
 function updateActiveOnly() {
-  document.querySelector(".progress-track").style.width = `${((state.current + 1) / slides.length) * 100}%`;
   document.querySelectorAll(".slide-section").forEach((section, index) => section.classList.toggle("active", index === state.current));
 }
 
