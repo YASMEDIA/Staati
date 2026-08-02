@@ -79,9 +79,6 @@ function saveSettings() {
 }
 
 function brandLogo(className = "", tone = "dark") {
-  if (state.settings.logoData) {
-    return `<img src="${state.settings.logoData}" alt="STAATI" class="${className}" />`;
-  }
   return `<img src="${assetUrl(DEFAULT_LOGOS[tone] || DEFAULT_LOGOS.dark)}" alt="STAATI" class="${className}" />`;
 }
 

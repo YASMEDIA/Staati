@@ -1,10 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
   --staati-dark: #0c0d10;
   --staati-light: #d9dce4;
   --staati-blue: #526cf4;
+  --staati-detail: #d1dcfb;
   --staati-muted: #9298ac;
+  --font-ui: Cuitadella, Ciutadella, "Cuitadella", Inter, "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-ar: "IBM Plex Sans Arabic", Cuitadella, Ciutadella, Inter, system-ui, sans-serif;
   --slide-w: min(92vw, calc(92vh * 16 / 9));
   --slide-h: calc(var(--slide-w) * 9 / 16);
   --deck-scale: 1;
@@ -23,12 +26,12 @@ body {
   min-height: 100vh;
   background: #08090b;
   color: #fff;
-  font-family: Inter, "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-family: var(--font-ui);
   overflow-x: hidden;
 }
 
 body[dir="rtl"] {
-  font-family: "IBM Plex Sans Arabic", Inter, system-ui, sans-serif;
+  font-family: var(--font-ar);
 }
 
 button,
@@ -36,6 +39,14 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+p,
+li,
+span,
+strong,
+div {
+  text-wrap: pretty;
 }
 
 button:focus-visible,
@@ -49,7 +60,7 @@ textarea:focus-visible {
 .deck-shell {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 20% 0%, rgba(82, 108, 244, 0.16), transparent 30%),
+    radial-gradient(circle at 20% 0%, rgba(82, 108, 244, 0.08), transparent 30%),
     linear-gradient(180deg, #090a0d 0%, #11131a 56%, #090a0d 100%);
 }
 
@@ -97,14 +108,14 @@ textarea:focus-visible {
 
 .slide-dark {
   background:
-    radial-gradient(circle at 78% 28%, rgba(82, 108, 244, 0.22), transparent 23%),
+    radial-gradient(circle at 78% 28%, rgba(82, 108, 244, 0.1), transparent 25%),
     linear-gradient(135deg, #0c0d10 0%, #12141c 62%, #08090c 100%);
   color: #fff;
 }
 
 .slide-light {
   background:
-    radial-gradient(circle at 92% 103%, rgba(82, 108, 244, 0.18), transparent 18%),
+    radial-gradient(circle at 92% 103%, rgba(82, 108, 244, 0.1), transparent 18%),
     #d9dce4;
   color: #07080c;
 }
@@ -123,10 +134,16 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   gap: 13px;
-  font-family: "Space Grotesk", Inter, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0.08em;
   font-size: clamp(9px, 0.72vw, 16px);
+}
+
+img[alt="STAATI"] {
+  display: block;
+  height: auto;
+  object-fit: contain;
 }
 
 .staati-dot {
@@ -134,7 +151,7 @@ textarea:focus-visible {
   height: 10px;
   border-radius: 999px;
   background: var(--staati-blue);
-  box-shadow: 0 0 30px rgba(82, 108, 244, 0.9);
+  box-shadow: 0 0 18px rgba(82, 108, 244, 0.48);
   animation: dotPulse 2.8s ease-in-out infinite;
 }
 
@@ -144,7 +161,7 @@ textarea:focus-visible {
   inset-inline-start: 4.8%;
   z-index: 4;
   color: currentColor;
-  opacity: 0.48;
+  opacity: 0.62;
   font-size: clamp(9px, 0.65vw, 14px);
   letter-spacing: 0.08em;
 }
@@ -153,7 +170,7 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--staati-blue);
+  color: var(--staati-detail);
   font-size: clamp(10px, 0.82vw, 18px);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -173,29 +190,31 @@ body[dir="rtl"] .section-label {
 }
 
 .slide-title {
-  font-family: "Space Grotesk", Inter, "IBM Plex Sans Arabic", sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(28px, 4.8vw, 96px);
   line-height: 0.98;
   letter-spacing: 0;
   font-weight: 800;
   max-width: 980px;
+  text-wrap: balance;
 }
 
 body[dir="rtl"] .slide-title {
-  font-family: "IBM Plex Sans Arabic", Inter, sans-serif;
+  font-family: var(--font-ar);
   line-height: 1.08;
 }
 
 .dashboard-feature-title {
-  font-family: "Space Grotesk", Inter, "IBM Plex Sans Arabic", sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(28px, 4vw, 78px);
   line-height: 1.02;
   letter-spacing: 0;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 body[dir="rtl"] .dashboard-feature-title {
-  font-family: "IBM Plex Sans Arabic", Inter, sans-serif;
+  font-family: var(--font-ar);
   line-height: 1.12;
 }
 
@@ -205,6 +224,7 @@ body[dir="rtl"] .dashboard-feature-title {
   color: var(--staati-muted);
   font-size: clamp(14px, 1.18vw, 25px);
   line-height: 1.45;
+  text-wrap: pretty;
 }
 
 .slide-title,
@@ -223,8 +243,24 @@ body[dir="rtl"] .dashboard-feature-title {
   color: #4e525d;
 }
 
+.slide-dark .slide-subtitle,
+.slide-dark .muted,
+.slide-dark .slide-number {
+  color: var(--staati-detail);
+}
+
 .muted {
   color: var(--staati-muted);
+}
+
+.slide-dark .text-white\/45,
+.slide-dark .text-staati-muted {
+  color: var(--staati-detail) !important;
+  opacity: 0.64;
+}
+
+.slide-light .text-\[\#5f6678\] {
+  color: #505665 !important;
 }
 
 .hairline {
@@ -236,7 +272,7 @@ body[dir="rtl"] .dashboard-feature-title {
 .blue-line {
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--staati-blue), transparent);
-  box-shadow: 0 0 24px rgba(82, 108, 244, 0.65);
+  box-shadow: 0 0 14px rgba(82, 108, 244, 0.34);
   animation: lineReveal 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
@@ -245,46 +281,33 @@ body[dir="rtl"] .dashboard-feature-title {
   position: absolute;
   inset: 0;
   z-index: 1;
-  opacity: 0.19;
-  background-image:
-    linear-gradient(rgba(146, 152, 172, 0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(146, 152, 172, 0.2) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(circle at 68% 42%, #000, transparent 62%);
+  opacity: 0.18;
+  background-image: radial-gradient(circle, rgba(209, 220, 251, 0.28) 0 1px, transparent 1.35px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at 74% 36%, #000, transparent 58%);
   pointer-events: none;
 }
 
 .orbital {
   position: absolute;
-  width: 46%;
-  aspect-ratio: 1;
-  border: 1px solid rgba(82, 108, 244, 0.34);
-  border-radius: 999px;
-  top: 24%;
-  inset-inline-end: 7%;
+  width: 48%;
+  height: 54%;
+  border: 0;
+  border-radius: 0;
+  top: 18%;
+  inset-inline-end: 4%;
   z-index: 2;
+  opacity: 0.28;
+  transform: rotate(-7deg);
+  background-image: radial-gradient(circle, rgba(82, 108, 244, 0.5) 0 1.5px, transparent 1.8px);
+  background-size: 14px 14px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 0 38%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 0 38%, transparent 72%);
 }
 
 .orbital::before,
 .orbital::after {
-  content: "";
-  position: absolute;
-  border-radius: 999px;
-}
-
-.orbital::before {
-  inset: 15%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.orbital::after {
-  width: 16px;
-  height: 16px;
-  background: var(--staati-blue);
-  top: 16%;
-  inset-inline-start: 17%;
-  box-shadow: 0 0 50px rgba(82, 108, 244, 0.95);
-  animation: orbitDot 9s linear infinite;
+  content: none;
 }
 
 .panel {
@@ -437,7 +460,7 @@ body[dir="rtl"] .dashboard-feature-title {
   align-items: center;
   gap: 12px;
   color: var(--staati-blue);
-  font-family: "Space Grotesk", Inter, sans-serif;
+  font-family: var(--font-ui);
   font-size: 40px;
   font-weight: 800;
   line-height: 1;
@@ -481,7 +504,7 @@ body[dir="rtl"] .dashboard-feature-title {
 }
 
 .metric-card strong {
-  font-family: "Space Grotesk", Inter, sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(24px, 2.45vw, 52px);
   line-height: 1;
 }
